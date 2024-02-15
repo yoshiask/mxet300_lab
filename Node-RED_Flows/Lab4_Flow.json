@@ -1,0 +1,234 @@
+[
+    {
+        "id": "d850750f.181af",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "71ed1a09.a9698c",
+        "type": "file in",
+        "z": "d850750f.181af",
+        "name": "",
+        "filename": "/tmp/Lab2_voltage.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 440,
+        "y": 160,
+        "wires": [
+            [
+                "3232ed5e.ed81aa"
+            ]
+        ]
+    },
+    {
+        "id": "3232ed5e.ed81aa",
+        "type": "ui_gauge",
+        "z": "d850750f.181af",
+        "name": "",
+        "group": "ede96e22.7a21c",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Battery Voltage",
+        "label": "Volts",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "13",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 680,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "be7f9029.f1d438",
+        "type": "inject",
+        "z": "d850750f.181af",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "0.1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "71ed1a09.a9698c",
+                "b8c60f82.578cc",
+                "d68af9b8.693d28"
+            ]
+        ]
+    },
+    {
+        "id": "b8c60f82.578cc",
+        "type": "file in",
+        "z": "d850750f.181af",
+        "name": "",
+        "filename": "/tmp/Lab4_xdot.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 430,
+        "y": 260,
+        "wires": [
+            [
+                "debe428b.dcdd9"
+            ]
+        ]
+    },
+    {
+        "id": "d68af9b8.693d28",
+        "type": "file in",
+        "z": "d850750f.181af",
+        "name": "",
+        "filename": "/tmp/Lab4_thetadot.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [
+                "b111dd65.8d1e48"
+            ]
+        ]
+    },
+    {
+        "id": "debe428b.dcdd9",
+        "type": "ui_chart",
+        "z": "d850750f.181af",
+        "name": "",
+        "group": "d79a548a.4a672",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Forward Velocity (m/s)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-0.5",
+        "ymax": "0.5",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 700,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b111dd65.8d1e48",
+        "type": "ui_chart",
+        "z": "d850750f.181af",
+        "name": "",
+        "group": "d79a548a.4a672",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Angular Velocity (rad/s)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-3.5",
+        "ymax": "3.5",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 710,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ede96e22.7a21c",
+        "type": "ui_group",
+        "name": "Robot Diagnostics",
+        "tab": "1f0ad04f.a93888",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "d79a548a.4a672",
+        "type": "ui_group",
+        "name": "Chassis Speeds",
+        "tab": "1f0ad04f.a93888",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "1f0ad04f.a93888",
+        "type": "ui_tab",
+        "name": "Lab 4",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

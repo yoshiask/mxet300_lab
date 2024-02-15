@@ -11,6 +11,7 @@ from time import sleep
 from threading import Thread
 import numpy as np
 import L1_ina as ina
+import L1_log as log
 import L2_inverse_kinematics as ik
 import L2_speed_control as sc
 
@@ -51,7 +52,10 @@ def _controlLoopUpdater():                                              #thread 
 
                 robotSpeedTarget = ik.map_speeds(joystickTarget)        #calculate robot speed target (xdot, thetadot) from joystick position 
                 wheelSpeedTarget = ik.getPdTargets(robotSpeedTarget)    #calculate wheel speed target (pdl, pdr) from (xdot, thetadot)
-                
+
+                log.tmpFile(robotSpeedTarget[0], "Lab4_xdot.txt")
+                log.tmpFile(robotSpeedTarget[1], "Lab4_thetadot.txt")
+
                 sc.driveOpenLoop(wheelSpeedTarget)                      #send wheel speeds to speed control for driving
             except Exception as ex:
                 print(repr(ex))                                         #if something goes wrong, print the error but keep looping
