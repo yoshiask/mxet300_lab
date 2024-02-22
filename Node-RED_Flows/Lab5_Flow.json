@@ -1,0 +1,368 @@
+[
+    {
+        "id": "36db7d2c.164a92",
+        "type": "tab",
+        "label": "Flow 4",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3bf866.4439bf9a",
+        "type": "file in",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "filename": "/tmp/Lab2_voltage.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 440,
+        "y": 60,
+        "wires": [
+            [
+                "37a38e83.4f5a1a"
+            ]
+        ]
+    },
+    {
+        "id": "37a38e83.4f5a1a",
+        "type": "ui_gauge",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "group": "d83e717e.a6171",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Battery Voltage",
+        "label": "Volts",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "13",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 680,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "68001693.07dce8",
+        "type": "inject",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "0.1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "3bf866.4439bf9a",
+                "f0d71acc.f1dbc8",
+                "62001a62.5cb51c",
+                "84dc8e11.cd6c08",
+                "2acf8454.07f6bc"
+            ]
+        ]
+    },
+    {
+        "id": "f0d71acc.f1dbc8",
+        "type": "file in",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "filename": "/tmp/Lab5_xDot.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 430,
+        "y": 160,
+        "wires": [
+            [
+                "cb117a73.b17c78"
+            ]
+        ]
+    },
+    {
+        "id": "62001a62.5cb51c",
+        "type": "file in",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "filename": "/tmp/Lab5_thetaDot.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 440,
+        "y": 240,
+        "wires": [
+            [
+                "9a67cdc8.055498"
+            ]
+        ]
+    },
+    {
+        "id": "cb117a73.b17c78",
+        "type": "ui_chart",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "group": "9f82c827.9cffe8",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Forward Velocity (m/s)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-0.5",
+        "ymax": "0.5",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 700,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9a67cdc8.055498",
+        "type": "ui_chart",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "group": "9f82c827.9cffe8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Angular Velocity (rad/s)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-3.5",
+        "ymax": "3.5",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 710,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "84dc8e11.cd6c08",
+        "type": "file in",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "filename": "/tmp/Lab5_phiDotL.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [
+                "b94bf37b.4a2aa8"
+            ]
+        ]
+    },
+    {
+        "id": "2acf8454.07f6bc",
+        "type": "file in",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "filename": "/tmp/Lab5_phiDotR.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 440,
+        "y": 420,
+        "wires": [
+            [
+                "e33bcf59.d70ff"
+            ]
+        ]
+    },
+    {
+        "id": "b94bf37b.4a2aa8",
+        "type": "ui_chart",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "group": "9d8cfe61.7f1b1",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Left Wheel (rad/s)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-10",
+        "ymax": "10",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 690,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e33bcf59.d70ff",
+        "type": "ui_chart",
+        "z": "36db7d2c.164a92",
+        "name": "",
+        "group": "9d8cfe61.7f1b1",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Right Wheel (rad/s)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-10",
+        "ymax": "10",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 690,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d83e717e.a6171",
+        "type": "ui_group",
+        "name": "Robot Diagnostics",
+        "tab": "f25e6220.917cd",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "9f82c827.9cffe8",
+        "type": "ui_group",
+        "name": "Chassis Speed",
+        "tab": "f25e6220.917cd",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "9d8cfe61.7f1b1",
+        "type": "ui_group",
+        "name": "Wheel Speeds",
+        "tab": "f25e6220.917cd",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "f25e6220.917cd",
+        "type": "ui_tab",
+        "name": "Lab 5",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
