@@ -1,0 +1,351 @@
+[
+    {
+        "id": "1ac8246d.62eef4",
+        "type": "tab",
+        "label": "Flow 5",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a6ffac43.3e1b98",
+        "type": "file in",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "filename": "/tmp/Lab2_voltage.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 500,
+        "y": 60,
+        "wires": [
+            [
+                "d2e1820f.f4168"
+            ]
+        ]
+    },
+    {
+        "id": "d2e1820f.f4168",
+        "type": "ui_gauge",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "group": "c5aad658.0d9f2",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Battery Voltage",
+        "label": "Volts",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "13",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 720,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "b7e7f86.1a2ed08",
+        "type": "inject",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "0.1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 180,
+        "wires": [
+            [
+                "a6ffac43.3e1b98",
+                "109d3d6a.480bbb",
+                "94ea4ac5.93974",
+                "ced04dcc.d4e31",
+                "423aa429.0d8af4"
+            ]
+        ]
+    },
+    {
+        "id": "109d3d6a.480bbb",
+        "type": "file in",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "filename": "/tmp/Lab6_closest_distance.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 530,
+        "y": 180,
+        "wires": [
+            [
+                "3bc046ee.f5f5e2"
+            ]
+        ]
+    },
+    {
+        "id": "3bc046ee.f5f5e2",
+        "type": "ui_chart",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "group": "fb7b97be.cdda6",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Distance (m)",
+        "chartType": "bar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "2",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 790,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "94ea4ac5.93974",
+        "type": "file in",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "filename": "/tmp/Lab6_closest_angle.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 520,
+        "y": 260,
+        "wires": [
+            [
+                "d0904a76.5c6698"
+            ]
+        ]
+    },
+    {
+        "id": "d0904a76.5c6698",
+        "type": "ui_gauge",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "group": "fb7b97be.cdda6",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "compass",
+        "title": "Angle",
+        "label": "degrees",
+        "format": "{{value}}",
+        "min": "-180",
+        "max": "180",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 770,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "ced04dcc.d4e31",
+        "type": "file in",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "filename": "/tmp/Lab6_closest_x.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 510,
+        "y": 340,
+        "wires": [
+            [
+                "a0f36663.b169e"
+            ]
+        ]
+    },
+    {
+        "id": "423aa429.0d8af4",
+        "type": "file in",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "filename": "/tmp/Lab6_closest_y.txt",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 510,
+        "y": 420,
+        "wires": [
+            [
+                "f98408ac.2508e8"
+            ]
+        ]
+    },
+    {
+        "id": "a0f36663.b169e",
+        "type": "ui_chart",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "group": "63f8eb27.d9152c",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "X Direction (m)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 800,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f98408ac.2508e8",
+        "type": "ui_chart",
+        "z": "1ac8246d.62eef4",
+        "name": "",
+        "group": "63f8eb27.d9152c",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Y Direction (m)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 800,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c5aad658.0d9f2",
+        "type": "ui_group",
+        "name": "Robot Diagnostics",
+        "tab": "9508e85e.496688",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "fb7b97be.cdda6",
+        "type": "ui_group",
+        "name": "Polar Coordinates",
+        "tab": "9508e85e.496688",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "63f8eb27.d9152c",
+        "type": "ui_group",
+        "name": "Cartesian Coordinates",
+        "tab": "9508e85e.496688",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "9508e85e.496688",
+        "type": "ui_tab",
+        "name": "Lab 6",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
