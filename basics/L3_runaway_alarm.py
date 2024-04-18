@@ -99,10 +99,10 @@ def main():
                     e_width = target_width - w                          # Find error in target width and measured width
 
                     # If error width is within acceptable margin
-                    if abs(e_width) < width_margin:
-                        sc.driveOpenLoop(np.array([0.,0.]))             # Stop when centered and aligned
-                        print("Aligned! ",w)
-                        continue
+                    # if abs(e_width) < width_margin:
+                    #     sc.driveOpenLoop(np.array([0.,0.]))             # Stop when centered and aligned
+                    #     print("Aligned! ",w)
+                    #     continue
 
                     fwd_effort = e_width / target_width                   
                     
@@ -117,6 +117,7 @@ def main():
                 print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
 
             else:
+                # TODO: SPIIIIIIIN!!!
                 print("No targets")
                 sc.driveOpenLoop(np.array([0.,0.]))         # stop if no targets detected
 
