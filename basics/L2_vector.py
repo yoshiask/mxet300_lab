@@ -33,6 +33,16 @@ def nearest(scan):                                  # find the nearest point in 
     return vec                                      # contains [r, alpha]
 
 
+
+def farthest(scan):                                 # find the farthest point in the scan
+    dist = scan[:, 0]                               # store just first column
+    column_maxs = np.argmax(dist, axis=0)           # get index of max values along 0th axis (columns)
+    row_index = column_maxs                         # index of the smallest distance
+    vec = scan[row_index, :]                        # return the distance and angle of the farthest object in scan
+    return vec                                      # contains [r, alpha]
+
+
+
 def polar2cart(r, alpha):                           # convert an individual vector to cartesian coordinates (in the robot frame)
     alpha = np.radians(alpha)                       # alpha*(np.pi/180) # convert to radians
     x = r * np.cos(alpha)                           # get x
@@ -60,8 +70,15 @@ def getNearest():                                   # combine multiple functions
     return vec                                      # pass the closest valid vector [m, deg]
 
 
+def getFarthest():                                  # call to get farthest obstacle.
+    scan = lidar.polarScan()                        # get a reading in meters and degrees
+    valids = getValid(scan)                         # remove the bad readings
+    vec = farthest(valids)                          # find the farthest
+    return vec                                      # pass the farthest valid vector [m, deg]
+
+
 if __name__ == "__main__":
     while True:
-        myVector = getNearest()                                 # call the function which utilizes several functions in this program
-        print("\n The nearest object (m,deg):\n", myVector)     # print the result
+        myVector = getFarthest()                                 # call the function which utilizes several functions in this program
+        print("\n The farthest object (m,deg):\n", myVector)     # print the result
         time.sleep(0.1)                                         # small delay
