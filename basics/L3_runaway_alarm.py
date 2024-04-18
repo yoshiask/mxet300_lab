@@ -94,32 +94,16 @@ def main():
 
                 wheel_measured: np.array = kin.getPdCurrent()           # Wheel speed measurements
 
-                # If robot is facing target
-                if abs(angle) < angle_margin:                                 
-                    e_width = target_width - w                          # Find error in target width and measured width
-
-                    # If error width is within acceptable margin
-                    # if abs(e_width) < width_margin:
-                    #     sc.driveOpenLoop(np.array([0.,0.]))             # Stop when centered and aligned
-                    #     print("Aligned! ",w)
-                    #     continue
-
-                    fwd_effort = e_width / target_width                   
-                    
-                    wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
-                    sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
-                    print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
-                    continue
-
-                wheel_speed = ik.getPdTargets(np.array([0, -1.1*angle]))    # Find wheel speeds for only turning
-
-                sc.driveClosedLoop(wheel_speed, wheel_measured, 0)          # Drive robot
+                # Always move away from the target
+                fwd_effort = 2
+                
+                wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
+                sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
                 print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
-
             else:
                 # TODO: SPIIIIIIIN!!!
                 print("No targets")
-                sc.driveOpenLoop(np.array([0.,0.]))         # stop if no targets detected
+                sc.driveOpenLoop(np.array([+4.0, -4.0]))         # SPIN
 
                 
     except KeyboardInterrupt: # condition added to catch a "Ctrl-C" event and exit cleanly
