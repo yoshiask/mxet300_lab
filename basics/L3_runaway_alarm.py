@@ -10,49 +10,104 @@ import netifaces as ni
 from time import sleep
 from math import radians, pi
 
-# Gets IP to grab MJPG stream
-def getIp():
-    for interface in ni.interfaces()[1:]:   #For interfaces eth0 and wlan0
+FOV = 1
+EDGE_MARGIN = 5
+
+_kernel = np.ones((5,5),np.uint8)
+
+cap = cv2.VideoCapture(0)
+print("Video capture:", cap)
+
+Tracker = cv2.TrackerMIL_create()
+
+def restartTracking(img):
+    cv2.putText(img, "LOST", (75,75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+    # ROI = cv2.selectROI("Tracking...", img, False)
+    ROI = getInitialBounds(img)
+    if ROI is None:
+        return
+    Tracker = cv2.TrackerMIL_create()
+    Tracker.init(img, ROI)
+
+
+def getInitialBounds(img):
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) 
+    lower_blue = [110,50,50]
+    upper_blue = [130,255,255]
+    lb = (lower_blue[0], lower_blue[1], lower_blue[2])
+    ub = (upper_blue[0], upper_blue[1], upper_blue[2])
+    thresh = cv2.inRange(hsv, lb, ub)   # Find all pixels in color range
+
+    mask = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, _kernel)     # Open morph: removes noise w/ erode followed by dilate
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, _kernel)      # Close morph: fills openings w/ dilate followed by erode
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]                        # Find closed shapes in image
     
-        try:
-            ip = ni.ifaddresses(interface)[ni.AF_INET][0]['addr']
-            return ip
-            
-        except KeyError:                    #We get a KeyError if the interface does not have the info
-            continue                        #Try the next interface since this one has no IPv4
+    # no countours found
+    if len(cnts) <= 0:
+        return None
+
+    # Get the largest contour area
+    c = max(cnts, key=cv2.contourArea)
+
+    # Filter out really small shapes
+    if cv2.contourArea(c) < 200:
+        return None
+    
+    # Get bounding box (x,y,w,h) of the largest contour
+    roi = cv2.boundingRect(c)
+    return roi
+
+
+initialBounds = None
+while initialBounds is None:
+    success, img = cap.read()
+    if not success:
+        print("Failed to read from camera!")
+        continue
+    initialBounds = getInitialBounds(img)
+    print("Initial target not found!")
+    print("Trying again in 5 seconds...")
+    sleep(5)
+
+print("Starting bounds:", initialBounds)
+Tracker.init(img, initialBounds)
+
+while True:
+    Timer = cv2.getTickCount()
+    success, img = cap.read()
+
+    success, bound = Tracker.update(img)
+
+    frame_height, frame_width, _ = img.shape
+    x, y, w, h = bound
+
+    if ((frame_height - x) < EDGE_MARGIN) or ((frame_width - y) < EDGE_MARGIN) \
+        or (x < EDGE_MARGIN) or (y < EDGE_MARGIN):
+        # The bounds are really close to the edge,
+        # so we'll assume we lost the object.
+        success = False
+
+    if success:
+        # Human detected!
+        x,y,w,h = bound                                             # Get bounding rectangle (x,y,w,h) of the target
+        center_x, center_y = (int(x+0.5*w), int(y+0.5*h))           # defines center of rectangle around the largest target area
+        angle = round(((center_x / frame_width) - 0.5) * FOV, 3)    # angle of vector towards target center from camera, where 0 deg is centered
+
+        print(f"Human found at {center_x}, {center_y}!")
+
+        wheel_measured: np.array = kin.getPdCurrent()           # Wheel speed measurements
+
+        # Always move away from the target
+        fwd_effort = 2
         
-    return 0
-    
-#    Camera
-stream_ip = getIp()
-if not stream_ip: 
-    print("Failed to get IP for camera stream")
-    exit()
-
-camera_input = 'http://' + stream_ip + ':8090/?action=stream'   # Address for stream
-
-size_w  = 240   # Resized image width. This is the image width in pixels.
-size_h = 160	# Resized image height. This is the image height in pixels.
-
-fov = 1         # Camera field of view in rad (estimate)
-
-#    Color Range, described in HSV
-v1_min = 70     # Minimum H value
-v2_min = 80     # Minimum S value
-v3_min = 180    # Minimum V value
-
-v1_max = 105    # Maximum H value
-v2_max = 255    # Maximum S value
-v3_max = 255    # Maximum V value
-
-target_width = 100      # Target pixel width of tracked object
-angle_margin = 0.2      # Radians object can be from image center to be considered "centered"
-width_margin = 10       # Minimum width error to drive forward/back
-
-def drawBox(img, bound):
-    x, y, w, h = int(bound[0]), int(bound[1]),int(bound[2]), int(bound[3])
-    cv2.rectangle(img,(x,y), ((x+w), (y+h)), (255, 0, 0), 3, 1 ) 
-    cv2.putText(img, "TRACKING", (75,75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+        wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
+        sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
+        print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
+    else:
+        # SPIIIIIIIN!!!
+        print("No targets")
+        sc.driveOpenLoop(np.array([+4.0, -4.0]))
+        restartTracking(img)
 
 
 def main():
