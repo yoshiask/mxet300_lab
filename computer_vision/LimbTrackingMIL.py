@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 Tracker = cv2.TrackerMIL_create()
 
@@ -23,14 +23,14 @@ def Out_of_Frame():
     ROI = getInitialBounds(img)
     if ROI is None:
         return
-    Tracker = cv2.legacy.TrackerMOSSE_create()
+    Tracker = cv2.TrackerMIL_create()
     Tracker.init(img,ROI)
 
 
 def getInitialBounds(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) 
-    lower_blue = [110,50,50]
-    upper_blue = [130,255,255]
+    lower_blue = [0,0,235]
+    upper_blue = [185,30,255]
     lb = (lower_blue[0], lower_blue[1], lower_blue[2])
     ub = (upper_blue[0], upper_blue[1], upper_blue[2])
     thresh = cv2.inRange(hsv, lb, ub)   # Find all pixels in color range
@@ -74,7 +74,7 @@ while True:
 
     EDGE_MARGIN = 5
     if ((frame_height - x) < EDGE_MARGIN) or ((frame_width - y) < EDGE_MARGIN) \
-        or (x < 0) or (y < 0):
+        or (x < EDGE_MARGIN) or (y < EDGE_MARGIN):
         # The bounds are really close to the edge,
         # so we'll assume we lost the object.
         success = False
@@ -91,12 +91,15 @@ while True:
   
         res = cv2.bitwise_and(frame,frame, mask= mask) 
         
-        # This displays the frame, mask  
-        # and res which we created in 3 separate windows. 
-        #cv2.imshow('frame',frame) 
-        cv2.imshow('mask',mask) 
-        cv2.imshow('res',res) 
-  
+        try:
+            # This displays the frame, mask  
+            # and res which we created in 3 separate windows. 
+            #cv2.imshow('frame',frame) 
+            cv2.imshow('mask',mask) 
+            cv2.imshow('res',res) 
+        except:
+            pass
+
         # k = cv2.waitKey(5) & 0xFF
         # if k == 27: 
         #     break
@@ -104,9 +107,12 @@ while True:
         Out_of_Frame()
     
 
-    cv2.imshow("Tracking...", img)
-    fps = cv2.getTickFrequency()/(cv2.getTickCount()-Timer)
-    cv2.putText(img, str(int(fps)), (75,50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+    try:
+        cv2.imshow("Tracking...", img)
+        fps = cv2.getTickFrequency()/(cv2.getTickCount()-Timer)
+        cv2.putText(img, str(int(fps)), (75,50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+    except:
+        pass
 
     # Destroys all of the HighGUI windows. 
     #cv2.destroyAllWindows() 
