@@ -37,17 +37,23 @@ size_h = 160	# Resized image height. This is the image height in pixels.
 fov = 1         # Camera field of view in rad (estimate)
 
 #    Color Range, described in HSV
-v1_min = 30     # Minimum H value
-v2_min = 40     # Minimum S value
-v3_min = 160    # Minimum V value
+v1_min = 70     # Minimum H value
+v2_min = 80     # Minimum S value
+v3_min = 180    # Minimum V value
 
-v1_max = 100    # Maximum H value
-v2_max = 195    # Maximum S value
+v1_max = 105    # Maximum H value
+v2_max = 255    # Maximum S value
 v3_max = 255    # Maximum V value
 
 target_width = 100      # Target pixel width of tracked object
 angle_margin = 0.2      # Radians object can be from image center to be considered "centered"
 width_margin = 10       # Minimum width error to drive forward/back
+
+def drawBox(img, bound):
+    x, y, w, h = int(bound[0]), int(bound[1]),int(bound[2]), int(bound[3])
+    cv2.rectangle(img,(x,y), ((x+w), (y+h)), (255, 0, 0), 3, 1 ) 
+    cv2.putText(img, "TRACKING", (75,75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+
 
 def main():
     # Try opening camera with default method
@@ -59,34 +65,33 @@ def main():
     if not camera.isOpened():
         camera = cv2.VideoCapture(camera_input)    
 
-    camera.set(3, size_w)                       # Set width of images that will be retrived from camera
-    camera.set(4, size_h)                       # Set height of images that will be retrived from camera
+    #camera.set(3, size_w)                       # Set width of images that will be retrived from camera
+    #camera.set(4, size_h)                       # Set height of images that will be retrived from camera
+
+    Tracker = cv2.legacy.TrackerCSRT_create()
+    success, img = camera.read()
+    bound = cv2.selectROI("Tracking...", img, False)
+    Tracker.init(img,bound)
 
     try:
         while True:
             sleep(.05)                                          
 
-            ret, image = camera.read()  # Get image from camera
+            Timer = cv2.getTickCount()
+            success, img = camera.read()
+            success, bound = Tracker.update(img)
 
-            # Make sure image was grabbed
-            if not ret:
-                print("Failed to retrieve image!")
-                break
+            if success:
+                drawBox(img, bound)
+            else: 
+                cv2.putText(img, "LOST", (75,75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
 
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)              # Convert image to HSV
-
-            height, width, channels = image.shape                       # Get shape of image
-
-            thresh = cv2.inRange(image, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))   # Find all pixels in color range
-
-            kernel = np.ones((5,5),np.uint8)                            # Set kernel size
-            mask = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)     # Open morph: removes noise w/ erode followed by dilate
-            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)      # Close morph: fills openings w/ dilate followed by erode
-            cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-                    cv2.CHAIN_APPROX_SIMPLE)[-2]                        # Find closed shapes in image
+            cv2.imshow("Tracking...", img)
+            fps = cv2.getTickFrequency()/(cv2.getTickCount()-Timer)
+            cv2.putText(img, str(int(fps)), (75,50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
             
-            if len(cnts) and len(cnts) < 3:                             # If more than 0 and less than 3 closed shapes exist
-
+            if success:
+                # Human detected!
                 c = max(cnts, key=cv2.contourArea)                      # return the largest target area
                 x,y,w,h = cv2.boundingRect(c)                           # Get bounding rectangle (x,y,w,h) of the largest contour
                 center = (int(x+0.5*w), int(y+0.5*h))                   # defines center of rectangle around the largest target area
@@ -103,7 +108,10 @@ def main():
             else:
                 # TODO: SPIIIIIIIN!!!
                 print("No targets")
-                sc.driveOpenLoop(np.array([+4.0, -4.0]))         # SPIN
+                sc.driveOpenLoop(np.array([+4.0, -4.0]))
+            
+            if cv2.waitKey(1) & 0xff ==ord('q'):
+                break
 
                 
     except KeyboardInterrupt: # condition added to catch a "Ctrl-C" event and exit cleanly
