@@ -11,6 +11,7 @@ import L2_kinematics as kin
 import L2_vector as lv
 from time import sleep
 from math import radians, pi
+from pygame import mixer as mx
 
 FOV = 1
 EDGE_MARGIN = 5
@@ -123,6 +124,14 @@ def avoidObstacles(distance, angle):
         sleep(2)
         return True
     return False
+
+
+def soundAlarm():
+    mx.init()
+    mx.music.load("/home/pi/mxet300_lab/basics/alarm.mp3")
+    mx.music.play()
+    while mx.music.get_busy() == True:
+        continue
 
 
 def main():
