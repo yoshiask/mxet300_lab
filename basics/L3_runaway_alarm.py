@@ -11,7 +11,8 @@ import L2_kinematics as kin
 import L2_vector as lv
 from time import sleep
 from math import radians, pi
-from pygame import mixer as mx
+from sound import soundAlarm
+
 
 FOV = 1
 EDGE_MARGIN = 5
@@ -24,7 +25,7 @@ print("Video capture:", cap)
 Tracker = cv2.TrackerMIL_create()
 
 def restartTracking(img):
-    cv2.putText(img, "LOST", (75,75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+    # cv2.putText(img, "LOST", (75,75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
     # ROI = cv2.selectROI("Tracking...", img, False)
     ROI = getInitialBounds(img)
     if ROI is None:
@@ -125,18 +126,10 @@ def avoidObstacles(distance, angle):
         return True
     return False
 
-
-def soundAlarm():
-    mx.init()
-    mx.music.load("/home/pi/mxet300_lab/basics/alarm.mp3")
-    mx.music.play()
-    while mx.music.get_busy() == True:
-        continue
-
-
-def main():
+def trackerInit():
     initialBounds = None
     img = None
+    
     while initialBounds is None:
         success, img = cap.read()
         if not success:
@@ -150,55 +143,65 @@ def main():
     print("Starting bounds:", initialBounds)
     Tracker.init(img, initialBounds)
 
-    while True:
-        # Get LIDAR measurements to map the room
-        ob_distance, ob_angle = lv.getNearest()
-        print(f"Obstacle (r={ob_distance}, θ={ob_angle})")
+def runaway():
+    # Get LIDAR measurements to map the room
+    
+    ob_distance, ob_angle = lv.getNearest()
+    print(f"Obstacle (r={ob_distance}, θ={ob_angle})")
 
         # First check for obstacles. If we're about to crash into something,
         # it doesn't matter if the human is right behind us.
-        obstacleAvoided = avoidObstacles(ob_distance, ob_angle)
-        if obstacleAvoided:
-            sleep(0.1)
-            continue
+    obstacleAvoided = avoidObstacles(ob_distance, ob_angle)
+    if obstacleAvoided:
+        sleep(0.1)
+        #continue
 
-        Timer = cv2.getTickCount()
-        success, img = cap.read()
+    Timer = cv2.getTickCount()
+    success, img = cap.read() 
+    if not success:
+        print("Failed to retrieve image.")
+        return 
 
-        foundHuman, bound = Tracker.update(img)
+    foundHuman, bound = Tracker.update(img)
 
-        frame_height, frame_width, _ = img.shape
-        x, y, w, h = bound
+    frame_height, frame_width, _ = img.shape
+    x, y, w, h = bound 
+    
+
+    if ((frame_height - x) < EDGE_MARGIN) or ((frame_width - y) < EDGE_MARGIN) \
+        or (x < EDGE_MARGIN) or (y < EDGE_MARGIN):
+        # The bounds are really close to the edge,
+        # so we'll assume we lost the object.
+        foundHuman = False
+
+    if foundHuman:
+        # Human detected!
+        x,y,w,h = bound                                             # Get bounding rectangle (x,y,w,h) of the target
+        center_x, center_y = (int(x+0.5*w), int(y+0.5*h))           # defines center of rectangle around the largest target area
+        angle = round(((center_x / frame_width) - 0.5) * FOV, 3)    # angle of vector towards target center from camera, where 0 deg is centered
+
+        print(f"Human found at {center_x}, {center_y}!")
+
+        wheel_measured: np.array = kin.getPdCurrent()           # Wheel speed measurements
+
+        # Always move away from the target
+        fwd_effort = 2
         
+        wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
+        sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
+        print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
+    else:
+        # SPIIIIIIIN!!!
+        print("No targets")
+        sc.driveOpenLoop(np.array([+4.0, -4.0]))
+        restartTracking(img)
 
-        if ((frame_height - x) < EDGE_MARGIN) or ((frame_width - y) < EDGE_MARGIN) \
-            or (x < EDGE_MARGIN) or (y < EDGE_MARGIN):
-            # The bounds are really close to the edge,
-            # so we'll assume we lost the object.
-            foundHuman = False
-
-        if foundHuman:
-            # Human detected!
-            x,y,w,h = bound                                             # Get bounding rectangle (x,y,w,h) of the target
-            center_x, center_y = (int(x+0.5*w), int(y+0.5*h))           # defines center of rectangle around the largest target area
-            angle = round(((center_x / frame_width) - 0.5) * FOV, 3)    # angle of vector towards target center from camera, where 0 deg is centered
-
-            print(f"Human found at {center_x}, {center_y}!")
-
-            wheel_measured: np.array = kin.getPdCurrent()           # Wheel speed measurements
-
-            # Always move away from the target
-            fwd_effort = 2
-            
-            wheel_speed = ik.getPdTargets(np.array([0.8*fwd_effort, -0.5*angle]))   # Find wheel speeds for approach and heading correction
-            sc.driveClosedLoop(wheel_speed, wheel_measured, 0)  # Drive closed loop
-            print("Angle: ", angle, " | Target L/R: ", *wheel_speed, " | Measured L\R: ", *wheel_measured)
-        else:
-            # SPIIIIIIIN!!!
-            print("No targets")
-            sc.driveOpenLoop(np.array([+4.0, -4.0]))
-            restartTracking(img)
-
+def main():
+    
+    trackerInit()
+    soundAlarm()
+    while True:
+        runaway()
 
 if __name__ == '__main__':
     main()
