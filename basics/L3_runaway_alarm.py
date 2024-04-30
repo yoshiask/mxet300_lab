@@ -9,9 +9,9 @@ import L2_speed_control as sc
 import L2_inverse_kinematics as ik
 import L2_kinematics as kin
 import L2_vector as lv
+import sound
 from time import sleep
 from math import radians, pi
-from sound import soundAlarm
 
 
 FOV = 1
@@ -19,7 +19,7 @@ EDGE_MARGIN = 5
 
 _kernel = np.ones((5,5),np.uint8)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 print("Video capture:", cap)
 
 Tracker = cv2.TrackerMIL_create()
@@ -197,9 +197,14 @@ def runaway():
         restartTracking(img)
 
 def main():
-    
     trackerInit()
-    soundAlarm()
+
+    # TODO: Leave this here
+    sound.init()
+
+    # TODO: Move this when we want the alarm to go off
+    sound.soundAlarm()
+
     while True:
         runaway()
 
