@@ -61,21 +61,21 @@ def getInitialBounds(img):
 
 
 def getAngleCategory(angle):
-    if 180 >= angle > 130:
+    if 100 >= angle > 75:
         return "slightly left"
-    elif 130 >= angle > 80:
+    elif 74.9 >= angle > 50:
         return "left"
-    elif 80 >= angle > 30:
+    elif 49.9 >= angle > 30:
         return "hard left"
-    elif 30 >= angle >= 0:
+    elif 29.9 >= angle >= 0:
         return "pivot left"
-    elif -180 <= angle < -130:
+    elif -100 <= angle <= -75:
         return "slightly right"
-    elif -130 <= angle < -80:
+    elif -74.99 <= angle < -50:
         return "right"
-    elif -80 <= angle < -30:
+    elif -49.99 <= angle < -30:
         return "hard right"
-    elif -30 <= angle <= 0:
+    elif -29.99 <= angle <= 0:
         return "pivot right"
     else:
         return "straight"
@@ -110,6 +110,9 @@ def avoidObstacles(distance, angle):
         elif angle_category == "pivot right":
             lm.sendLeft(0.0)
             lm.sendRight(1.0)
+        elif angle_category == "straight":
+            lm.sendLeft(0.8)
+            lm.sendRight(0.8)
         return True
     elif distance < 0.0799999:
         lm.sendLeft(-0.8)
@@ -157,6 +160,7 @@ def main():
 
         frame_height, frame_width, _ = img.shape
         x, y, w, h = bound
+        
 
         if ((frame_height - x) < EDGE_MARGIN) or ((frame_width - y) < EDGE_MARGIN) \
             or (x < EDGE_MARGIN) or (y < EDGE_MARGIN):
