@@ -242,7 +242,7 @@ def main():
     trackerInit()
 
     sound.init()
-    #sound.soundAlarm()
+    sound.soundAlarm()
 
     while True:
         runaway()
