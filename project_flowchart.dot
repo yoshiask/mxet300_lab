@@ -1,0 +1,58 @@
+strict digraph {
+    node [shape="rect" fontname="Calibri"]
+    edge [fontname="Calibri"]
+    
+    start [shape="ellipse" style="filled" color="green" fontcolor="white"]
+    exit [shape="ellipse" style="filled" color="firebrick" fontcolor="white"]
+
+    init [label="Initialize tracker and audio"]
+    audio [label="Play alarm music"]
+    runaway [label="Get angle and distance of nearest obstacle"]
+    avoidObstacle [label="Is distance within\n[0.08, 0.5) meters?" style="filled" shape="diamond" color="lightskyblue"]
+    turnToAvoid [label="Turn an appropriate amount\nto avoid obstacle"]
+    avoidWall [label="Is distance less\nthan 0.08 meters?" style="filled" shape="diamond" color="lightskyblue"]
+    turnAround [label="Back up and turn 180° to avoid wall"]
+    
+    trackHuman [label="Update tracker with new frame"]
+    humanFound [label="Was a human\ndetected?" style="filled" shape="diamond" color="lightskyblue"]
+    isCloseEdge [label="Are tracker bounds close\nto the edge of the frame?" style="filled" shape="diamond" color="lightskyblue"]
+    avoidHuman [label="Turn to face away from human\nand speed forward"]
+    findHuman [label="Spin in place to locate human"]
+    
+    getALS [label="Request data from ALS via SPI"]
+    alsReading [label="Was ALS reading\nless than 33?" style="filled" shape="diamond" color="lightskyblue"]
+    lightOn [label="Turn light on"]
+    lightOff [label="Turn light off"]
+    
+    checkButton [label="Is stop button\npressed?" style="filled" shape="diamond" color="lightskyblue"]
+    
+    start
+        -> init
+        -> audio
+        -> runaway
+        -> avoidObstacle
+        
+    avoidObstacle -> turnToAvoid [label="Yes" color="green"]
+    turnToAvoid -> getALS
+    avoidObstacle -> avoidWall [label="No" color="red"]
+    avoidWall -> turnAround [label="Yes" color="green"]
+    turnAround -> getALS
+    avoidWall -> trackHuman [label="No" color="red"]
+    
+    trackHuman -> humanFound
+    humanFound -> isCloseEdge [label="Yes" color="green"]
+    isCloseEdge -> avoidHuman [label="No" color="red"]
+    avoidHuman -> getALS
+    isCloseEdge -> findHuman [label="Yes" color="green"]
+    humanFound -> findHuman [label="No" color="red"]
+    findHuman -> getALS
+    
+    getALS -> alsReading
+    alsReading -> lightOn [label="Yes" color="green"]
+    alsReading -> lightOff [label="No" color="red"]
+    lightOn -> checkButton
+    lightOff -> checkButton
+    
+    checkButton -> exit [label="Yes" color="green"]
+    checkButton -> runaway [label="No" color="red"]
+}
